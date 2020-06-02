@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt 
 import numpy as np
 import math
+from scipy.integrate import odeint
 
 
 
 
-
- """   
+"""   
 Constantes :
 rho = 1000 kg/m³
 mu =10^-3 kg/ms
@@ -134,7 +134,7 @@ rc= (a*a+tabrm*tabrm)**(3/2)/(2*a*a+tabrm*tabrm)'''
 print(len(tab_r))'''
 
 
-while pphi>0.001 : 
+'''while pphi>0.001 : 
     vr= vr-Fl(rho,Umax,H,r,pr0)/m*dt+Fd(mu,r,rc,rho,Uf,H)/m*dt
     vr2=vr2-Fl(rho,Umax,H,r2,pr02)/m2*dt+Fd(mu,r2,rc,rho,Uf,H)/m2*dt
     pr0=pr0+vr*dt
@@ -154,10 +154,10 @@ while pphi>0.001 :
     tab_vr.append(vr)
     tab_vr2.append(vr2)
     tab_Fl.append(Fl(rho,Umax,H,r,pr0))
-    tab_Fd.append(Fd(mu,r,rc,rho,Uf,H))
+    tab_Fd.append(Fd(mu,r,rc,rho,Uf,H))'''
 
 
-axes=plt.gca()
+'''axes=plt.gca()
 axes.set_xlim(-0.0013,0.0013)
 axes.set_ylim(-0.0013,0.0013)
 x=tabr*np.cos(tabphi)
@@ -165,7 +165,7 @@ y=tabr*np.sin(tabphi)
 x2=tabr2*np.cos(tabphi)
 #plt.plot(tabT,tabr0)
 plt.plot(x,y)
-plt.plot(x2,y)
+plt.plot(x2,y)'''
 
 
 '''tabrint=(a*tabt)
@@ -179,9 +179,22 @@ plt.plot(tabxI,tabyI)
 plt.plot(tabxE,tabyE)
 plt.show()'''
     
-    
+'''pr''(t)+Fl-Fd=0
+pr'(t)=p(t)
+p'(t)=Fd-Fl'''
+def reussite(y,t,rho,Umax,H,r,mu,rc,Uf):
+    pr,p=y
+    dydt=[p,Fd(mu,r,rc,rho,Uf,H)/m-Fl(rho,Umax,H,r,pr0)/m]
+    return dydt
+y0=[rc+pr0,0.0]
+t=np.linspace(0,10*np.pi,1000)
+sol=odeint(reussite,y0,t,args=(rho,Umax,H,r,mu,rc,Uf))
+x=sol[:,0]*np.cos(t)
+y=sol[:,0]*np.sin(t)
 
-tabt=np.linspace(0,10*np.pi,10001)
+plt.plot(x,y)    
+
+'''tabt=np.linspace(0,10*np.pi,10001)
 tabrint=(a*tabt)
 tabrext=tabrint+50e-6
 tabmil=tabrint+25e-6
@@ -194,6 +207,6 @@ tabyM=tabmil*np.sin(tabt)
 
 plt.plot(tabxI,tabyI,'k')
 plt.plot(tabxE,tabyE,'k')
-plt.plot(tabxM,tabyM,'k')
+plt.plot(tabxM,tabyM,'k')'''
 plt.show()
 
