@@ -182,13 +182,13 @@ plt.show()'''
 '''pr''(t)+Fl-Fd=0
 pr'(t)=p(t)
 p'(t)=Fd-Fl'''
-def reussite(y,t,rho,Umax,H,r,mu,rc,Uf):
+def integrale(y,t,rho,Umax,H,r,mu,rc,Uf):
     pr,p=y
     dydt=[p,Fd(mu,r,rc,rho,Uf,H)/m-Fl(rho,Umax,H,r,pr0)/m]
     return dydt
 y0=[rc+pr0,0.0]
 t=np.linspace(0,10*np.pi,1000)
-sol=odeint(reussite,y0,t,args=(rho,Umax,H,r,mu,rc,Uf))
+sol=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,rc,Uf))
 x=sol[:,0]*np.cos(t)
 y=sol[:,0]*np.sin(t)
 
