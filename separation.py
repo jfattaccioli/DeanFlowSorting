@@ -137,12 +137,13 @@ def spirale():
 '''pr''(t)+Fl-Fd=0
 pr'(t)=p(t)
 p'(t)=Fd-Fl'''
-def integrale(y,t,rho,Umax,H,r,mu,Uf):
-    rc=(a)*((t*t+1)**(3/2))/(t*t+2)
+def integrale(y,t,rho,Umax,H,r,mu,Uf,rc):
+    i=int(10*np.pi/t)
+    print (t)
+    print (i)
     pr,p=y
-    dydt=[p,Fd(mu,r,rc,rho,Uf,H)-Fl(rho,Umax,H,r,pr0)]
-    print(rc)
-    print(dydt)
+    dydt=[p,Fd(mu,r,rc[i],rho,Uf,H)-Fl(rho,Umax,H,r,pr0)]
+    #print(rc)
     return dydt
    
 
@@ -150,8 +151,9 @@ def integrale(y,t,rho,Umax,H,r,mu,Uf):
 
 
 def main(n):
+    spirale()
     if n==1 :
-        spirale()
+        
         tab1,tab2,tab3=methodepas(pr,pphi,pr2,pr0,pr02,vr,vr2,rc)
         axes=plt.gca()
         axes.set_xlim(-0.0013,0.0013)
@@ -162,11 +164,13 @@ def main(n):
         #plt.plot(tabT,tabr0)
         plt.plot(x,y)
     if n==2 : 
-        t=np.linspace(10*np.pi,0,num=1000)
-        y0=[rc+pr0,0.0]
-        sol=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,Uf))
-        x=sol[:,0]*np.cos(t)
-        y=sol[:,0]*np.sin(t)
+        t=np.linspace(10*np.pi,0,num=10001)
+        rc=(a)*((t*t+1)**(3/2))/(t*t+2)
+        print(rc[0])
+        y0=[rc[0]+pr0,0.0]
+        sol=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,Uf,rc))
+        x=sol[:,0]+rc*np.cos(t)
+        y=sol[:,0]+rc*np.sin(t)
         plt.plot(x,y)
     plt.show()
 
