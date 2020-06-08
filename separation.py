@@ -138,7 +138,7 @@ def spirale():
 pr'(t)=p(t)
 p'(t)=Fd-Fl'''
 def integrale(y,t,rho,Umax,H,r,mu,Uf,rc):
-    i=int(10*np.pi/t)
+    i=int(10*np.pi/t)                                               #indice indiquant l'avancement de la spirale
     pr,p=y
     dydt=[p,Fd(mu,r,rc[i],rho,Uf,H)-Fl(rho,Umax,H,r,pr0)]
     print(dydt)
@@ -148,9 +148,10 @@ def integrale(y,t,rho,Umax,H,r,mu,Uf,rc):
 
 
 
+#Fonction principale permettant d'appeler les fonctions annexes - execution du programme
 def main(n):
     spirale()
-    if n==1 :
+    if n==1 :                                                       #Utilisation de la méthode pas
         tab1,tab2,tab3=methodepas(pr,pphi,pr2,pr0,pr02,vr,vr2,rc)
         axes=plt.gca()
         axes.set_xlim(-0.0013,0.0013)
@@ -158,9 +159,8 @@ def main(n):
         x=tab1*np.cos(tab3)
         y=tab1*np.sin(tab3)
         x2=tab2*np.cos(tab3)
-        #plt.plot(tabT,tabr0)
         plt.plot(x,y)
-    if n==2 : 
+    if n==2 :                                                       #Utilisation de la méthode intégrale
         t=np.linspace(10*np.pi,0,num=10001)
         rc2=(a)*((t*t+1)**(3/2))/(t*t+2)
         y0=[pr0,0.0]
