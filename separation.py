@@ -24,7 +24,7 @@ vphi=0.27                                         #Vitesse constante longitudina
 dt=0.00001                                        #Pas de temps
 vr=0                                              #Vitesse latérale initiale de la particule 1
 vr2=0                                             #Vitesse latérale initiale de la particule 2
-pr0=H/3                                           #Position initale de la particule 1 au sein du tube
+pr0=H/3+0.000001                                  #Position initale de la particule 1 au sein du tube
 pr02=H/3                                          #Position initale de la particule 2 au sein du tube
 pr=rc+pr0                                         #Position initale de la particule 1 
 pr2=rc+pr02                                       #Position initale de la particule 2
@@ -41,6 +41,7 @@ def Fl(rho,Umax,H,r,pr):
         Cl=np.abs(np.sin(10*np.pi/3/H*pr-5*np.pi/3))
     else :
         Cl =-np.abs(np.sin(10*np.pi/3/H*pr-5*np.pi/3))
+    #print(rho*Umax*Umax*Cl*r*r*r*r/H/H)
     return rho*Umax*Umax*Cl*r*r*r*r/H/H
 
 
@@ -49,6 +50,7 @@ def Fl(rho,Umax,H,r,pr):
 def Fd(mu,r,Rc,rho,Uf,H):
     De=rho*Uf*H/mu*np.sqrt(H/(2*Rc))
     #De=0.94
+    #print(5.4e-4*np.pi*mu*De**(1.63)*r)
     return 5.4e-4*np.pi*mu*De**(1.63)*r
     
 
@@ -149,7 +151,7 @@ def integrale(y,t,rho,Umax,H,r,mu,Uf,rc):
 
 #Fonction principale permettant d'appeler les fonctions annexes - execution du programme
 def main(n):
-    spirale()
+    #spirale()
     if n==1 :                                                       #Utilisation de la méthode pas
         tab1,tab2,tab3=methodepas(pr,pphi,pr2,pr0,pr02,vr,vr2,rc)
         axes=plt.gca()
@@ -165,16 +167,18 @@ def main(n):
         y0=[pr0,0.0]
         sol1=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,Uf,rc2))
         sol2=odeint(integrale,y0,t,args=(rho,Umax,H,r2,mu,Uf,rc2))
-        x1=(sol1[:,0]+rc2)*np.cos(t)
-        y1=(sol1[:,0]+rc2)*np.sin(t)
-        #x=t
-        #y=sol1[:,0]
-        #y2=sol2[:,0]
-        x2=(sol2[:,0]+rc2)*np.cos(t)
-        y2=(sol2[:,0]+rc2)*np.sin(t)
-        plt.plot(x1,y1,"r")
-        plt.plot(x2,y2,"b")
+        #x1=(sol1[:,0]+rc2)*np.cos(t)
+        #y1=(sol1[:,0]+rc2)*np.sin(t)
+        print("sol1=",sol1)
+        print("sol2=",sol2)
+        x=t
+        y=sol1[:,0]
+        y2=sol2[:,0]
+        #x2=(sol2[:,0]+rc2)*np.cos(t)
+        #y2=(sol2[:,0]+rc2)*np.sin(t)
+        plt.plot(x,y,"r")
+        plt.plot(x,y2,"b")
 
-main(1)
+
 main(2)
 plt.show()
