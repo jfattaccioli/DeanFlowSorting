@@ -9,8 +9,8 @@ from scipy.integrate import odeint
 
 H=50e-6                                          #Hauteur du tube
 mu = 0.001 #
-r=20e-6                                           #Taille particule 1
-r2=15e-6                                          #Taille particule 2
+r=15e-6                                           #Taille particule 1
+r2=10e-6                                          #Taille particule 2
 a=250e-6/2/np.pi                                  #Espace entre chaque tour de la spirale
 m=1050*4/3*np.pi*(r/2)**3                         #Masse particule
 rho=1000
@@ -24,7 +24,7 @@ vphi=0.27                                         #Vitesse constante longitudina
 dt=0.00001                                        #Pas de temps
 vr=0                                              #Vitesse latérale initiale de la particule 1
 vr2=0                                             #Vitesse latérale initiale de la particule 2
-pr0=4*H/5                                         #Position initale de la particule 1 au sein du tube
+pr0=H/3+0.000001                                  #Position initale de la particule 1 au sein du tube
 pr02=H/3                                          #Position initale de la particule 2 au sein du tube
 pr=rc+pr0                                         #Position initale de la particule 1 
 pr2=rc+pr02                                       #Position initale de la particule 2
@@ -41,6 +41,7 @@ def Fl(rho,Umax,H,r,pr):
         Cl=np.abs(np.sin(10*np.pi/3/H*pr-5*np.pi/3))
     else :
         Cl =-np.abs(np.sin(10*np.pi/3/H*pr-5*np.pi/3))
+    #print(rho*Umax*Umax*Cl*r*r*r*r/H/H)
     return rho*Umax*Umax*Cl*r*r*r*r/H/H
 
 
@@ -49,6 +50,7 @@ def Fl(rho,Umax,H,r,pr):
 def Fd(mu,r,Rc,rho,Uf,H):
     De=rho*Uf*H/mu*np.sqrt(H/(2*Rc))
     #De=0.94
+    #print(5.4e-4*np.pi*mu*De**(1.63)*r)
     return 5.4e-4*np.pi*mu*De**(1.63)*r
     
 
@@ -76,66 +78,60 @@ print(len(tab_r))'''
 
 
 #Creation de tableaux des positions,vitesses,forces et rayons de courbures
-tabr=[pr]
-tabphi=[pphi]
-tabrc=[rc]
-tabr2=[pr2]
-tab_vr=[0]
-tab_vr2=[0]
-tab_Fl=[0]
-tab_Fd=[0]
-tabr0=[pr0]
+
 
 #Méthode en prenant un pas de temps arbitraire et en passant de l'accélération à la vitesse en utilisant ce pas
-'''while pphi>0.001 : 
-    vr= vr-Fl(rho,Umax,H,r,pr0)/m*dt+Fd(mu,r,rc,rho,Uf,H)/m*dt              #Utilisation du PFD sur la particule 1
-    vr2=vr2-Fl(rho,Umax,H,r2,pr02)/m2*dt+Fd(mu,r2,rc,rho,Uf,H)/m2*dt        #Utilisation du PFD sur la particule 2
-    pr0=pr0+vr*dt
-    pr02=pr02+vr2*dt
-    rc= (a)*((pphi*pphi+1)**(3/2))/(pphi*pphi+2)
-    pr=pr0+rc
-    pr2=pr02+rc
-    pphi=pphi-0.27/rc*dt
-    
-    #Mise à jour des tableaux à chaque passage
-    tabrc.append(rc)
-    tabphi.append(pphi)
-    tabr.append(pr)
-    tabr2.append(pr2)
-    tab_vr.append(vr)
-    tab_vr2.append(vr2)
-    tab_Fl.append(Fl(rho,Umax,H,r,pr0))
-    tab_Fd.append(Fd(mu,r,rc,rho,Uf,H))'''
 
+def methodepas(pr,pphi,pr2,pr0,pr02,vr,vr2,rc):
+    tabr=np.array([pr])
+    tabphi=np.array([pphi])
+    tabrc=np.array([rc])
+    tabr2=np.array([pr2])
+    tab_vr=np.array([0])
+    tab_vr2=np.array([0])
+    tab_Fl=np.array([0])
+    tab_Fd=np.array([0])
+    tabr0=np.array([pr0])
+    while pphi>0.001 : 
+        vr= vr-Fl(rho,Umax,H,r,pr0)/m*dt+Fd(mu,r,rc,rho,Uf,H)/m*dt              #Utilisation du PFD sur la particule 1
+        vr2=vr2-Fl(rho,Umax,H,r2,pr02)/m2*dt+Fd(mu,r2,rc,rho,Uf,H)/m2*dt        #Utilisation du PFD sur la particule 2
+        pr0=pr0+vr*dt
+        pr02=pr02+vr2*dt
+        rc= (a)*((pphi*pphi+1)**(3/2))/(pphi*pphi+2)
+        pr=pr0+rc
+        pr2=pr02+rc
+        pphi=pphi-0.27/rc*dt
+        
+        #Mise à jour des tableaux à chaque passage
+        tabrc=np.append(tabrc,rc)
+        tabphi=np.append(tabphi,pphi)
+        tabr=np.append(tabr,pr)
+        tabr2=np.append(tabr2,pr2)
+        tab_vr=np.append(tab_vr,vr)
+        tab_vr2=np.append(tab_vr2,vr2)
+        tab_Fl=np.append(tab_Fl,Fl(rho,Umax,H,r,pr0))
+        tab_Fd=np.append(tab_Fd,Fd(mu,r,rc,rho,Uf,H))
+    return(tabr,tabr2,tabphi)
 
-
-#Tracés des axes et de la position des particules en coordonnées cartésiennes 
-'''axes=plt.gca()
-axes.set_xlim(-0.0013,0.0013)
-axes.set_ylim(-0.0013,0.0013)
-x=tabr*np.cos(tabphi)
-y=tabr*np.sin(tabphi)
-x2=tabr2*np.cos(tabphi)
-#plt.plot(tabT,tabr0)
-plt.plot(x,y)
-plt.plot(x2,y)'''
 
 
 #Tracé la spirale d'archimède de 5 tours à bonne échelle
-'''tabt=np.linspace(0,10*np.pi,10001)
-tabrint=(a*tabt)
-tabrext=tabrint+50e-6
-tabmil=tabrint+25e-6
-tabxI=tabrint*np.cos(tabt)
-tabyI=tabrint*np.sin(tabt)
-tabxE=tabrext*np.cos(tabt)
-tabyE=tabrext*np.sin(tabt)
-tabxM=tabmil*np.cos(tabt)
-tabyM=tabmil*np.sin(tabt)
 
-plt.plot(tabxI,tabyI,'k')
-plt.plot(tabxE,tabyE,'k')
-plt.plot(tabxM,tabyM,'k')'''
+def spirale():
+    tabt=np.linspace(0,10*np.pi,10001)
+    tabrint=(a*tabt)
+    tabrext=tabrint+50e-6
+    tabmil=tabrint+25e-6
+    tabxI=tabrint*np.cos(tabt)
+    tabyI=tabrint*np.sin(tabt)
+    tabxE=tabrext*np.cos(tabt)
+    tabyE=tabrext*np.sin(tabt)
+    tabxM=tabmil*np.cos(tabt)
+    tabyM=tabmil*np.sin(tabt)
+
+    plt.plot(tabxI,tabyI,'k')
+    plt.plot(tabxE,tabyE,'k')
+    plt.plot(tabxM,tabyM,'k')
 
 
 
@@ -143,18 +139,46 @@ plt.plot(tabxM,tabyM,'k')'''
 '''pr''(t)+Fl-Fd=0
 pr'(t)=p(t)
 p'(t)=Fd-Fl'''
-def integrale(y,t,rho,Umax,H,r,mu,rc,Uf):
+def integrale(y,t,rho,Umax,H,r,mu,Uf,rc):
+    i=int(10*np.pi/t)                                               #indice indiquant l'avancement de la spirale
     pr,p=y
-    dydt=[p,Fd(mu,r,rc,rho,Uf,H)/m-Fl(rho,Umax,H,r,pr0)/m]
+    dydt=[p,Fd(mu,r,rc[i],rho,Uf,H)-Fl(rho,Umax,H,r,pr0)]
     return dydt
-y0=[rc+pr0,0.0]
-t=np.linspace(0,10*np.pi,1000)
-sol=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,rc,Uf))
-x=sol[:,0]*np.cos(t)
-y=sol[:,0]*np.sin(t)
-
-plt.plot(x,y)    
+   
 
 
+
+
+#Fonction principale permettant d'appeler les fonctions annexes - execution du programme
+def main(n):
+    #spirale()
+    if n==1 :                                                       #Utilisation de la méthode pas
+        tab1,tab2,tab3=methodepas(pr,pphi,pr2,pr0,pr02,vr,vr2,rc)
+        axes=plt.gca()
+        axes.set_xlim(-0.0013,0.0013)
+        axes.set_ylim(-0.0013,0.0013)
+        x=tab1*np.cos(tab3)
+        y=tab1*np.sin(tab3)
+        x2=tab2*np.cos(tab3)
+        plt.plot(x,y,"g")
+    if n==2 :                                                       #Utilisation de la méthode intégrale
+        t=np.linspace(10*np.pi,0,num=10001)
+        rc2=(a)*((t*t+1)**(3/2))/(t*t+2)
+        y0=[pr0,0.0]
+        sol1=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,Uf,rc2))
+        sol2=odeint(integrale,y0,t,args=(rho,Umax,H,r2,mu,Uf,rc2))
+        #x1=(sol1[:,0]+rc2)*np.cos(t)
+        #y1=(sol1[:,0]+rc2)*np.sin(t)
+        print("sol1=",sol1)
+        print("sol2=",sol2)
+        x=t
+        y=sol1[:,0]
+        y2=sol2[:,0]
+        #x2=(sol2[:,0]+rc2)*np.cos(t)
+        #y2=(sol2[:,0]+rc2)*np.sin(t)
+        plt.plot(x,y,"r")
+        plt.plot(x,y2,"b")
+
+
+main(2)
 plt.show()
-
