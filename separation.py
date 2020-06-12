@@ -162,7 +162,7 @@ def main(n):
         x2=tab2*np.cos(tab3)
         plt.plot(x,y,"g")
     if n==2 :                                                       #Utilisation de la méthode intégrale
-        t=np.linspace(10*np.pi,0,num=10001)
+        t=np.linspace(10*np.pi,0, num=10001)
         rc2=(a)*((t*t+1)**(3/2))/(t*t+2)
         y0=[pr0,0.0]
         sol1=odeint(integrale,y0,t,args=(rho,Umax,H,r,mu,Uf,rc2))
